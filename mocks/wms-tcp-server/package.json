@@ -1,0 +1,12 @@
+{
+  "name": "wms-tcp-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "net": "^1.0.2"
+  }
+}

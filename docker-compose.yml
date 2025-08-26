@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: swift
+      POSTGRES_PASSWORD: swift
+      POSTGRES_DB: swiftdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  order-api:
+    build: ./services/order-api
+    ports:
+      - "3001:3000"
+    environment:
+      - PORT=3000
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  cms-adapter:
+    build: ./services/cms-adapter
+    ports:
+      - "3002:3000"
+    environment:
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+      - cms-soap-server
+
+  wms-adapter:
+    build: ./services/wms-adapter
+    ports:
+      - "3003:3000"
+    environment:
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+      - wms-tcp-server
+
+  ros-adapter:
+    build: ./services/ros-adapter
+    ports:
+      - "3004:3000"
+    environment:
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+      - ros-rest-server
+
+  notification:
+    build: ./services/notification
+    ports:
+      - "3005:3000"
+    environment:
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+
+  delivery:
+    build: ./services/delivery
+    ports:
+      - "3006:3000"
+    environment:
+      - RABBIT_URL=amqp://rabbitmq
+    depends_on:
+      - rabbitmq
+      - postgres
+
+  # Mock external systems
+  cms-soap-server:
+    build: ./mocks/cms-soap-server
+    ports:
+      - "4001:4000"
+
+  wms-tcp-server:
+    build: ./mocks/wms-tcp-server
+    ports:
+      - "4002:4000"
+
+  ros-rest-server:
+    build: ./mocks/ros-rest-server
+    ports:
+      - "4003:4000"
+
+volumes:
+  db_data:

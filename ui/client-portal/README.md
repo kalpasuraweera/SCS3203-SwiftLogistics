@@ -6,7 +6,7 @@ This is the React app for SwiftTrack clients.
 ```powershell
 npm install
 npm start
-# Visit http://localhost:3000
+# Visit http://localhost:5000
 ```
 
 ## Connecting to Backend Services

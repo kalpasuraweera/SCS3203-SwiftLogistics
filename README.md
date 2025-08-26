@@ -32,12 +32,12 @@ docker compose up --build
 cd ui/client-portal
 npm install
 npm start
-# Visit http://localhost:3000
+# Visit http://localhost:5000
 
 cd ../driver-app
 npm install
 npm start
-# Visit http://localhost:3000
+# Visit http://localhost:5001
 ```
 
 ---

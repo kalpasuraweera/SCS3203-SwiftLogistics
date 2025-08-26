@@ -1,0 +1,44 @@
+{
+  "realm": "swifttrack",
+  "enabled": true,
+  "users": [
+    {
+      "username": "clientuser",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Client",
+      "lastName": "User",
+      "email": "client@example.com",
+      "credentials": [
+        { "type": "password", "value": "clientpass", "temporary": false }
+      ]
+    },
+    {
+      "username": "driveruser",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Driver",
+      "lastName": "User",
+      "email": "driver@example.com",
+      "credentials": [
+        { "type": "password", "value": "driverpass", "temporary": false }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "client-portal",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["+"]
+    },
+    {
+      "clientId": "driver-app",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["+"]
+    }
+  ]
+}

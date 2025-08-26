@@ -117,21 +117,23 @@ gateway:
 
 # Keycloak for authentication (optional, not enabled by default)
 # Uncomment to enable Keycloak and mount realm config if needed
-# keycloak:
-#   image: quay.io/keycloak/keycloak:24.0.1
-#   environment:
-#     KEYCLOAK_ADMIN: admin
-#     KEYCLOAK_ADMIN_PASSWORD: admin
-#     KC_DB: postgres
-#     KC_DB_URL_HOST: postgres
-#     KC_DB_URL_DATABASE: swiftdb
-#     KC_DB_USERNAME: swift
-#     KC_DB_PASSWORD: swift
-#     # KEYCLOAK_IMPORT: /opt/keycloak/data/import/realm-export.json
-#   ports:
-#     - "8081:8080"
-#   depends_on:
-#     - postgres
-#   # volumes:
-#   #   - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
-#   # Developer note: Place realm-export.json in infra/keycloak for custom realms.
+keycloak:
+  image: quay.io/keycloak/keycloak:24.0.1
+  environment:
+    KEYCLOAK_ADMIN: admin
+    KEYCLOAK_ADMIN_PASSWORD: admin
+    KC_DB: postgres
+    KC_DB_URL_HOST: postgres
+    KC_DB_URL_DATABASE: swiftdb
+    KC_DB_USERNAME: swift
+    KC_DB_PASSWORD: swift
+  # To auto-import a realm, place realm-export.json in infra/keycloak and uncomment the next line:
+  KEYCLOAK_IMPORT: /opt/keycloak/data/import/realm-export.json
+  ports:
+    - "8081:8080"
+  depends_on:
+    - postgres
+  # To auto-import a realm, uncomment the next line and provide realm-export.json:
+  volumes:
+    - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+  # Developer note: Place realm-export.json in infra/keycloak for custom realms. Access admin UI at http://localhost:8081 (admin/admin).

@@ -1,18 +1,17 @@
-# Keycloak Infrastructure
+# Keycloak Setup Guide
 
-This folder is for Keycloak configuration and realm exports.
+Keycloak provides authentication and authorization for the SwiftTrack platform.
 
-- Add realm export files or custom themes here.
-- The Keycloak service can be added to `docker-compose.yml` for authentication needs.
+## Running Keycloak
+- Keycloak is enabled in `docker-compose.yml`.
+- Access the admin UI at [http://localhost:8081](http://localhost:8081) (user: `admin`, password: `admin`).
+- By default, Keycloak uses the Postgres DB defined in compose.
 
-## Example: Realm Import
-You can mount a realm file in `docker-compose.yml` like this:
+## Importing a Realm
+- To pre-load users, clients, and roles, export a realm from Keycloak and place it as `infra/keycloak/realm-export.json`.
+- Uncomment the `KEYCLOAK_IMPORT` and `volumes` lines in `docker-compose.yml` to auto-import on startup.
 
-```yaml
-keycloak:
-  image: quay.io/keycloak/keycloak:24.0.1
-  environment:
-    KEYCLOAK_IMPORT: /opt/keycloak/data/import/realm-export.json
-  volumes:
-    - ./infra/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
-```
+## Developer Notes
+- After Keycloak is running, create a realm, clients (for each UI/app), and users as needed.
+- Update your frontend apps to use Keycloak for login (OIDC/OAuth2). See the UI README files for integration tips.
+- For production, change admin credentials and secure the instance.

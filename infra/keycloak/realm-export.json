@@ -30,14 +30,14 @@
       "clientId": "client-portal",
       "enabled": true,
       "publicClient": true,
-      "redirectUris": ["http://localhost:3000/*"],
+  "redirectUris": ["http://localhost:5000/*", "http://localhost:8080/client/*"],
       "webOrigins": ["+"]
     },
     {
       "clientId": "driver-app",
       "enabled": true,
       "publicClient": true,
-      "redirectUris": ["http://localhost:3000/*"],
+  "redirectUris": ["http://localhost:5001/*", "http://localhost:8080/driver/*"],
       "webOrigins": ["+"]
     }
   ]

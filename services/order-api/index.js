@@ -7,30 +7,27 @@ const app = express();
 app.use(express.json());
 
 
-const fs = require('fs');
-const ORDERS_FILE = __dirname + '/orders.json';
+
+const { sequelize, Order } = require('./models');
+const keycloakAuth = require('./auth');
 const EVENT_QUEUES = {
   created: 'order.created',
   updated: 'order.updated',
   deleted: 'order.deleted',
 };
-
 let channel;
 
-// Helper to read/write orders
-function readOrders() {
-  try {
-    return JSON.parse(fs.readFileSync(ORDERS_FILE, 'utf8'));
-  } catch {
-    return [];
-  }
-}
-function writeOrders(orders) {
-  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2));
-}
 
-// Connect to RabbitMQ
-async function connectRabbit() {
+// Connect to DB and RabbitMQ
+async function init() {
+  try {
+    await sequelize.authenticate();
+    await Order.sync();
+    console.log('Connected to Postgres');
+  } catch (err) {
+    console.error('Postgres connection error:', err);
+    process.exit(1);
+  }
   try {
     const conn = await amqp.connect(RABBIT_URL);
     channel = await conn.createChannel();
@@ -40,87 +37,89 @@ async function connectRabbit() {
     console.log('Connected to RabbitMQ');
   } catch (err) {
     console.error('RabbitMQ connection error:', err);
-    setTimeout(connectRabbit, 5000);
+    setTimeout(init, 5000);
   }
 }
-connectRabbit();
+init();
+
 
 app.get('/health', (req, res) => res.send('OK'));
 
-// CRUD endpoints
+// All endpoints below require authentication
+app.use(keycloakAuth);
+
+
+// CRUD endpoints (now using Postgres)
 // Get all orders
-app.get('/orders', (req, res) => {
-  res.json(readOrders());
+app.get('/orders', async (req, res) => {
+  const orders = await Order.findAll();
+  res.json(orders);
 });
 
 // Get order by id
-app.get('/orders/:id', (req, res) => {
-  const orders = readOrders();
-  const order = orders.find(o => o.id == req.params.id);
+app.get('/orders/:id', async (req, res) => {
+  const order = await Order.findByPk(req.params.id);
   if (!order) return res.status(404).json({ error: 'Order not found' });
   res.json(order);
 });
 
 // Create order
 app.post('/orders', async (req, res) => {
-  const order = req.body;
-  if (!order || !order.id) {
+  const data = req.body;
+  if (!data || !data.id) {
     return res.status(400).json({ error: 'Order must have an id' });
   }
-  let orders = readOrders();
-  if (orders.find(o => o.id == order.id)) {
-    return res.status(409).json({ error: 'Order with this id already exists' });
-  }
-  orders.push(order);
-  writeOrders(orders);
   try {
+    const order = await Order.create({ ...data, createdAt: new Date(), updatedAt: new Date() });
     if (channel) {
       channel.sendToQueue(EVENT_QUEUES.created, Buffer.from(JSON.stringify(order)), { persistent: true });
-      console.log('Order created & published:', order);
+      console.log('Order created & published:', order.toJSON());
     }
+    res.status(201).json({ status: 'Order created', order });
   } catch (err) {
-    console.error('Error publishing order:', err);
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ error: 'Order with this id already exists' });
+    }
+    console.error('Error creating order:', err);
+    res.status(500).json({ error: 'Failed to create order' });
   }
-  res.status(201).json({ status: 'Order created', order });
 });
 
 // Update order
 app.put('/orders/:id', async (req, res) => {
   const id = req.params.id;
   const update = req.body;
-  let orders = readOrders();
-  const idx = orders.findIndex(o => o.id == id);
-  if (idx === -1) return res.status(404).json({ error: 'Order not found' });
-  orders[idx] = { ...orders[idx], ...update, id };
-  writeOrders(orders);
   try {
+    const order = await Order.findByPk(id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    await order.update({ ...update, updatedAt: new Date() });
     if (channel) {
-      channel.sendToQueue(EVENT_QUEUES.updated, Buffer.from(JSON.stringify(orders[idx])), { persistent: true });
-      console.log('Order updated & published:', orders[idx]);
+      channel.sendToQueue(EVENT_QUEUES.updated, Buffer.from(JSON.stringify(order)), { persistent: true });
+      console.log('Order updated & published:', order.toJSON());
     }
+    res.json({ status: 'Order updated', order });
   } catch (err) {
-    console.error('Error publishing order update:', err);
+    console.error('Error updating order:', err);
+    res.status(500).json({ error: 'Failed to update order' });
   }
-  res.json({ status: 'Order updated', order: orders[idx] });
 });
 
 // Delete order
 app.delete('/orders/:id', async (req, res) => {
   const id = req.params.id;
-  let orders = readOrders();
-  const idx = orders.findIndex(o => o.id == id);
-  if (idx === -1) return res.status(404).json({ error: 'Order not found' });
-  const [deleted] = orders.splice(idx, 1);
-  writeOrders(orders);
   try {
+    const order = await Order.findByPk(id);
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    await order.destroy();
     if (channel) {
-      channel.sendToQueue(EVENT_QUEUES.deleted, Buffer.from(JSON.stringify(deleted)), { persistent: true });
-      console.log('Order deleted & published:', deleted);
+      channel.sendToQueue(EVENT_QUEUES.deleted, Buffer.from(JSON.stringify(order)), { persistent: true });
+      console.log('Order deleted & published:', order.toJSON());
     }
+    res.json({ status: 'Order deleted', order });
   } catch (err) {
-    console.error('Error publishing order delete:', err);
+    console.error('Error deleting order:', err);
+    res.status(500).json({ error: 'Failed to delete order' });
   }
-  res.json({ status: 'Order deleted', order: deleted });
 });
 
 app.listen(PORT, () => console.log(`Order API running on port ${PORT}`));

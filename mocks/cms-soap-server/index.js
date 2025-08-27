@@ -8,7 +8,9 @@ const service = {
   CMSService: {
     CMSPort: {
       CreateOrder(args, cb) {
-        return { status: 'OK', cmsRef: 'CMS-123' };
+        // Echo back orderId and generate a random CMS ref
+        const cmsRef = 'CMS-' + Math.floor(Math.random() * 100000);
+        return { status: 'OK', cmsRef, orderId: args.orderId };
       }
     }
   }

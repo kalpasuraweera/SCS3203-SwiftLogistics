@@ -12,16 +12,16 @@ This roadmap will help your team track progress and priorities as you build out 
 - [x] Environment/config files for all apps
 
 ## 2. 🧑‍💻 Core Service Development
-- [ ] Implement Order API (CRUD, event publishing)
-- [ ] Implement CMS Adapter (SOAP bridge)
-- [ ] Implement WMS Adapter (TCP bridge)
-- [ ] Implement ROS Adapter (REST bridge)
-- [ ] Implement Notification Service (WebSocket push)
-- [ ] Implement Delivery Service (driver actions/events)
+- [x] Implement Order API (CRUD, event publishing)
+- [x] Implement CMS Adapter (SOAP bridge)
+- [x] Implement WMS Adapter (TCP bridge)
+- [x] Implement ROS Adapter (REST bridge)
+- [x] Implement Notification Service (WebSocket push)
+- [x] Implement Delivery Service (driver actions/events)
 
 ## 3. 🧪 Mocks & Integration
-- [ ] Finalize and test all mock servers (SOAP, TCP, REST)
-- [ ] End-to-end event flow: Order → Adapters → Notification → Delivery
+- [x] Finalize and test all mock servers (SOAP, TCP, REST)
+- [x] End-to-end event flow: Order → Adapters → Notification → Delivery
 - [ ] Integration tests for service-to-service messaging
 
 ## 4. 🖥️ Frontend Development

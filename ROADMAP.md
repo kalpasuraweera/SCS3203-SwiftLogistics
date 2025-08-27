@@ -27,9 +27,9 @@ This roadmap will help your team track progress and priorities as you build out 
 ## 4. 🖥️ Frontend Development
 - [x] Client Portal UI: basic login, order creation, order tracking
 - [x] Driver App UI: login, delivery actions, real-time updates
-- [ ] Connect UIs to backend via API Gateway
-- [ ] Integrate Keycloak authentication in both UIs
-- [ ] Integrate WebSocket notifications in both UIs
+- [x] Connect UIs to backend via API Gateway
+- [x] Integrate Keycloak authentication in both UIs
+- [x] Integrate WebSocket notifications in both UIs
 
 ## 5. 🔒 Security & Auth
 - [ ] Configure Keycloak realms, clients, and roles

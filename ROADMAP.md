@@ -25,8 +25,8 @@ This roadmap will help your team track progress and priorities as you build out 
 - [ ] Integration tests for service-to-service messaging
 
 ## 4. 🖥️ Frontend Development
-- [ ] Client Portal UI: basic login, order creation, order tracking
-- [ ] Driver App UI: login, delivery actions, real-time updates
+- [x] Client Portal UI: basic login, order creation, order tracking
+- [x] Driver App UI: login, delivery actions, real-time updates
 - [ ] Connect UIs to backend via API Gateway
 - [ ] Integrate Keycloak authentication in both UIs
 - [ ] Integrate WebSocket notifications in both UIs

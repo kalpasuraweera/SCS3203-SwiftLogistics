@@ -3,9 +3,12 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+
 app.post('/optimize', (req, res) => {
+  const { orderId } = req.body;
   setTimeout(() => {
-    res.json({ routeId: 'ROUTE-789', stops: ['Colombo', 'Kandy'] });
+    const routeId = 'ROUTE-' + Math.floor(Math.random() * 100000);
+    res.json({ routeId, orderId, stops: ['Colombo', 'Kandy'] });
   }, 1000);
 });
 

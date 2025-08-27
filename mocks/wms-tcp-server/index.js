@@ -5,7 +5,8 @@ const server = net.createServer(socket => {
   socket.on('data', data => {
     const msg = JSON.parse(data.toString());
     if (msg.op === 'createPackage') {
-      socket.write(JSON.stringify({ event: 'packageReady', ref: 'WMS-456' }));
+      const wmsRef = 'WMS-' + Math.floor(Math.random() * 100000);
+      socket.write(JSON.stringify({ event: 'packageReady', ref: wmsRef, orderId: msg.orderId }));
     }
   });
 });

@@ -19,26 +19,14 @@ A modern, modular logistics orchestration system built with Node.js microservice
 docker compose up --build
 ```
 
+#### Default Access Points
 - RabbitMQ UI: [http://localhost:15672](http://localhost:15672) (guest/guest)
 - Postgres: `localhost:5432` (swift/swift)
 - API Gateway: [http://localhost:8080](http://localhost:8080)
 - Order API: [http://localhost:3001/orders](http://localhost:3001/orders)
-- Client Portal UI: (see below)
-- Driver App UI: (see below)
-
-### Running UI Apps (Dev Mode)
-
-```powershell
-cd ui/client-portal
-npm install
-npm start
-# Visit http://localhost:5000
-
-cd ../driver-app
-npm install
-npm start
-# Visit http://localhost:5001
-```
+- Client Portal UI: [http://localhost:5000](http://localhost:5000)
+- Driver App UI: [http://localhost:5001](http://localhost:5001)
+- Keycloak (optional): [http://localhost:8081](http://localhost:8081) (admin/admin)
 
 ---
 
@@ -81,28 +69,21 @@ root/
 - Each service is a standalone Node.js app (see `services/`).
 - Use Express for HTTP APIs, `amqplib` for RabbitMQ, and `.env` for config.
 - All services expose `/health` for health checks.
-- Use the provided `index.js` skeletons as a starting point.
 
 ### Messaging/Event Flow
 - Use RabbitMQ queues for inter-service events (e.g., `order.created`).
 - Services should publish/consume events as needed for decoupling.
-- See `order-api/index.js` for a publishing example.
 
 ### API Gateway
 - NGINX config in `infra/gateway/nginx.conf` routes `/api/*` to services.
 - Update this config to add new routes or change service ports.
 
-### Mocks
-- Mocks in `mocks/` simulate external systems (SOAP, TCP, REST).
-- Use these for local development and integration testing.
-
 ### UI Apps
 - React apps in `ui/client-portal` and `ui/driver-app`.
-- Use `npm start` for local dev, or build and serve statically in production.
+- Use `npm start` for local dev, or run via Docker Compose.
 
 ### Infra
 - Place custom config/scripts for RabbitMQ, Postgres, Keycloak, and Gateway in `infra/`.
-- See each infra folder's README for mounting instructions.
 
 ### Authentication (Optional)
 - Keycloak can be enabled for OAuth2/OpenID Connect.
@@ -113,7 +94,7 @@ root/
 ## 📝 Notes
 - Use Docker Compose for a consistent, reproducible dev environment.
 - Keep service dependencies minimal and use environment variables for config.
-- Document any new services, events, or API routes in this README.
+- Document new services, events, or API routes in this README.
 
 ---
 
